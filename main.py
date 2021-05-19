@@ -185,7 +185,7 @@ def handle_execution(execution):
 	elif execution.startswith("SHR "):
 		 handle(execution, "001101", 3)
 	elif execution.startswith("NOP "):
-		 handle(execution, "00111", 3)
+		 outfile.write("380000\n")
 	elif execution.startswith("PUSH "):
 		 handle(execution, "001111", 4)
 	elif execution.startswith("POP "):	
