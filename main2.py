@@ -1,6 +1,5 @@
-register = [0,0,0,0,0,0,0]  #[PC, A, B, ...]
+register = [0,0,0,0,0,0, 2**16-2]  #[PC, A, B, ...]   S is last memory address
 flag = {'zf':False, 'cf':False, 'sf':False}
-
 
 
 #ram = [0 for i in range(2**16)] #ram[0] has the integer of first 8bits, ram[8] has the integer of the second 8bits,...
@@ -54,6 +53,10 @@ class instruction:
 	def set_register_value(self, value, register_num):
 		fitted_value = fit_to_2bytes(value)
 		register[register_num] = fitted_value
+
+	def set_memory_value(self, value, address):
+		fitted_value = fit_to_2bytes(value)
+		ram[address] = fitted_value
 
 	#sets value to the corressponding ram address or register. Trundicates if there is an overflow and complements if
 	#value is negative
@@ -138,9 +141,14 @@ class instruction:
 		elif self.opcode == 14:  # NOP
 			pass
 		elif self.opcode == 15:  # PUSH
-			pass
+			self.set_memory_value(value, register[6])
+			register[6] -= 2
 		elif self.opcode == 16:  # POP
-			pass
+			if register[6] in ram.keys():
+				self.set_value(ram[register[6]])
+			else:
+				self.set_value(0)
+			register[6] =+ 2
 		elif self.opcode == 17:  # CMP
 			new_value = register[1] + (2**16 - value)
 			self.set_flag(new_value)
@@ -172,7 +180,7 @@ class instruction:
 				register[0] = value
 				return
 		elif self.opcode == 25:  # JB
-			if flag['sf'] == False and flag['zf'] == False
+			if flag['sf'] == False and flag['zf'] == False:
 				register[0] = value
 				return
 		elif self.opcode == 26:  # JBE
