@@ -123,21 +123,41 @@ class instruction:
 			self.set_value(value + not_one) # I take 2's complement of 1, then add.
 			self.set_flag(value + not_one) # I take 2's complement of 1, then add.
 		elif self.opcode == 8:  # XOR
-			pass
+			new_value = fit_to_2bytes(register[1] ^ value)
+			old_val = flag['cf'] 
+			self.set_register_value(new_value, 1)
+			self.set_flag(new_value)
+			flag['cf'] = old_val
 		elif self.opcode == 9:  # AND
-			pass
+			new_value = fit_to_2bytes(register[1] & value)
+			old_val = flag['cf'] 
+			self.set_register_value(new_value, 1)
+			self.set_flag(new_value)
+			flag['cf'] = old_val
 		elif self.opcode == 10:  # OR
-			pass
+			new_value = fit_to_2bytes(register[1] | value)
+			old_val = flag['cf'] 
+			self.set_register_value(new_value, 1)
+			self.set_flag(new_value)
+			flag['cf'] = old_val
 		elif self.opcode == 11:  # NOT
-			new_value = 2**16 - 1 - value
+			new_value = fit_to_2_bytes(value~)
+			old_val = flag['cf'] 
 			self.set_value(new_value)
-			old_val = flag['cf'] #This flag shouldn't be affected in this operation. So i keep the original value before the operation and assign it later.
 			self.set_flag(new_value)
 			flag['cf'] = old_val
 		elif self.opcode == 12:  # SHL
-			pass
+			new_value = value << 1
+			old_val = flag['cf'] 
+			self.set_value(new_value)
+			self.set_flag(new_value)
+			flag['cf'] = old_val
 		elif self.opcode == 13:  # SHR
-			pass
+			new_value = value >> 1
+			old_val = flag['cf'] 
+			self.set_value(new_value)
+			self.set_flag(new_value)
+			flag['cf'] = old_val
 		elif self.opcode == 14:  # NOP
 			pass
 		elif self.opcode == 15:  # PUSH
