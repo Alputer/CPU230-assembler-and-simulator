@@ -11,7 +11,36 @@ ram = dict()    #checking the truthness of this is easier so I used this one.
 
 instruction_list = []
 
-halt = False
+appropriate_address_modes = {
+	1: [0,1,2,3],  #HALT may be different
+	2: [0,1,2,3],
+	3: [1,2,3],
+	4: [0,1,2,3],
+	5: [0,1,2,3],
+	6: [0,1,2,3],
+	7: [0,1,2,3],
+	8: [0,1,2,3],
+	9: [0,1,2,3],
+	10: [0,1,2,3],
+	11: [0,1,2,3],
+	12: [1],
+	13: [1],
+	14: [1,2,3,4],  # ?
+	15: [1],
+	16: [1],
+	17: [0,1,2,3],
+	18: [0],
+	19: [0],
+	20: [0],
+	21: [0],
+	22: [0],
+	23: [0],
+	24: [0],
+	25: [0],
+	26: [0],
+	27: [1,2,3],
+	28: [0,1,2,3]
+}
 
 
 def fit_to_2bytes(number):
@@ -21,6 +50,8 @@ def fit_to_2bytes(number):
 
 
 class instruction:
+	halt = False
+	error = False
 	#opcode     addresing_mode      operand
 	def __init__(self, opcode, addresing_mode, operand):
 		self.opcode = opcode
@@ -95,13 +126,20 @@ class instruction:
 			flag['sf'] = False
 
 
+	def check_operand_address_mode_consistency(self):
+		return self.addresing_mode in appropriate_address_modes[self.opcode]
+
 
 	def execute(self):
+		if not self.check_operand_address_mode_consistency():
+			instruction.error = True
+			return
+
 		value = self.get_value()   # 0 <= value < 2**16
 
 		if self.opcode == 1: #HALT
 			print("halting...")
-			halt = True
+			instruction.halt = True
 		elif self.opcode == 2: #LOAD
 			register[1] = value
 		elif self.opcode == 3:  # STORE
@@ -124,37 +162,37 @@ class instruction:
 			self.set_flag(value + not_one) # I take 2's complement of 1, then add.
 		elif self.opcode == 8:  # XOR
 			new_value = fit_to_2bytes(register[1] ^ value)
-			old_val = flag['cf'] 
+			old_val = flag['cf']
 			self.set_register_value(new_value, 1)
 			self.set_flag(new_value)
 			flag['cf'] = old_val
 		elif self.opcode == 9:  # AND
 			new_value = fit_to_2bytes(register[1] & value)
-			old_val = flag['cf'] 
+			old_val = flag['cf']
 			self.set_register_value(new_value, 1)
 			self.set_flag(new_value)
 			flag['cf'] = old_val
 		elif self.opcode == 10:  # OR
 			new_value = fit_to_2bytes(register[1] | value)
-			old_val = flag['cf'] 
+			old_val = flag['cf']
 			self.set_register_value(new_value, 1)
 			self.set_flag(new_value)
 			flag['cf'] = old_val
 		elif self.opcode == 11:  # NOT
-			new_value = fit_to_2_bytes(value~)
-			old_val = flag['cf'] 
+			new_value = 2**16 - 1 - value
+			old_val = flag['cf']
 			self.set_value(new_value)
 			self.set_flag(new_value)
 			flag['cf'] = old_val
 		elif self.opcode == 12:  # SHL
 			new_value = value << 1
-			old_val = flag['cf'] 
+			old_val = flag['cf']
 			self.set_value(new_value)
 			self.set_flag(new_value)
 			flag['cf'] = old_val
 		elif self.opcode == 13:  # SHR
 			new_value = value >> 1
-			old_val = flag['cf'] 
+			old_val = flag['cf']
 			self.set_value(new_value)
 			self.set_flag(new_value)
 			flag['cf'] = old_val
@@ -162,6 +200,8 @@ class instruction:
 			pass
 		elif self.opcode == 15:  # PUSH
 			self.set_memory_value(value, register[6])
+			if register[6] == 0:
+				instruction.error = True
 			register[6] -= 2
 		elif self.opcode == 16:  # POP
 			if register[6] in ram.keys():
@@ -169,6 +209,8 @@ class instruction:
 			else:
 				self.set_value(0)
 			register[6] =+ 2
+			if register[6] == 2**16:
+				instruction.error = True
 		elif self.opcode == 17:  # CMP
 			new_value = register[1] + (2**16 - value)
 			self.set_flag(new_value)
@@ -258,11 +300,13 @@ while True:
 	print(ram)
 	print()
 
-	if halt:
+	if instruction.halt:
 		break
 
+	if instruction.error:
+		print('ERROR FOUND!!!')
+		break
 
-print(ram)
 
 infile.close()
 outfile.close()
