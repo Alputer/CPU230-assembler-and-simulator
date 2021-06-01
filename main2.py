@@ -206,13 +206,13 @@ class instruction:
 				instruction.error = True
 			register[6] -= 2
 		elif self.opcode == 16:  # POP
+			register[6] += 2
+			if register[6] == 2 ** 16:
+				instruction.error = True
 			if register[6] in ram.keys():
 				self.set_value(ram[register[6]])
 			else:
 				self.set_value(0)
-			register[6] =+ 2
-			if register[6] == 2**16:
-				instruction.error = True
 		elif self.opcode == 17:  # CMP
 			new_value = register[1] + (2**16 - value)
 			self.set_flag(new_value)
@@ -236,19 +236,19 @@ class instruction:
 				register[0] = value
 				return
 		elif self.opcode == 23:  # JA  Neyin above olduguna gore sf == False yapmamiz gerekebilir !!!
-			if flag['sf'] == True and flag['zf'] == False:
-				register[0] = value
-				return
-		elif self.opcode == 24:  # JAE
-			if flag['sf'] == True or flag['zf'] == True:
-				register[0] = value
-				return
-		elif self.opcode == 25:  # JB
 			if flag['sf'] == False and flag['zf'] == False:
 				register[0] = value
 				return
-		elif self.opcode == 26:  # JBE
+		elif self.opcode == 24:  # JAE
 			if flag['sf'] == False or flag['zf'] == True:
+				register[0] = value
+				return
+		elif self.opcode == 25:  # JB
+			if flag['sf'] == True and flag['zf'] == False:
+				register[0] = value
+				return
+		elif self.opcode == 26:  # JBE
+			if flag['sf'] == True or flag['zf'] == True:
 				register[0] = value
 				return
 		elif self.opcode == 27:  # READ
@@ -294,10 +294,11 @@ for i in range(len(line_list)):
 
 print(register)
 print()
-
+print(instruction_list)
 
 while True:
 	i = register[0]//3
+	print(i)
 	print(str(i)+':', str(instruction_list[i]), "(" + line_list[i] + ")")
 	instruction_list[i].execute()
 
