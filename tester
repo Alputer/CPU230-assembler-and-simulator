@@ -1,0 +1,6 @@
+import subprocess
+
+for i in range(0,14):
+    print(i)
+    subprocess.call("python main.py testcases/input" + str(i) + ".asm", shell=True)
+    subprocess.call("python main2.py myoutputs/output" + str(i) + ".txt", shell=True)
