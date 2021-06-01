@@ -1,3 +1,5 @@
+import sys
+
 register = [0,0,0,0,0,0, 2**16-2]  #[PC, A, B, ...]   S is last memory address
 flag = {'zf':False, 'cf':False, 'sf':False}
 
@@ -25,7 +27,7 @@ appropriate_address_modes = {
 	11: [0,1,2,3],
 	12: [1],
 	13: [1],
-	14: [1,2,3,4],  # ?
+	14: [0,1,2,3],  # ?
 	15: [1],
 	16: [1],
 	17: [0,1,2,3],
@@ -275,10 +277,13 @@ def instruction_code_to_values(code):
 	return instruction(opcode, addressing_mode, operand)
 
 
+infile_name = "out.bin"
+outfile_name = "myoutput2.txt"
+if len(sys.argv) >= 2:
+	outfile_name = sys.argv[1]
 
-
-infile =  open("input2.txt", 'r') #To read the file.
-outfile = open("myoutput2.txt", 'w') #To append, if we open with w, it overwrites.
+infile =  open(infile_name, 'r') #To read the file.
+outfile = open(outfile_name, 'w') #To append, if we open with w, it overwrites.
 
 line_list = infile.readlines()  # Elements also have \n at the end!!! I may need to delete them.
 
