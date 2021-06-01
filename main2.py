@@ -286,10 +286,8 @@ def instruction_code_to_values(code):
 	return instruction(opcode, addressing_mode, operand)
 
 
-infile_name = "out.bin"
-outfile_name = "myoutput2.txt"
-if len(sys.argv) >= 2:
-	outfile_name = sys.argv[1]
+infile_name = sys.argv[1]
+outfile_name = infile_name[: len(infile_name) -  3] + "txt"
 
 infile =  open(infile_name, 'r') #To read the file.
 outfile = open(outfile_name, 'w') #To append, if we open with w, it overwrites.
@@ -307,20 +305,27 @@ print(instruction_list)
 
 while True:
 	i = register[0]//3
-	print(i)
-	print(str(i)+':', str(instruction_list[i]), "(" + line_list[i] + ")")
+
+
+	if(register[0] > 3 * (len(instruction_list) - 1)): #Checks whether we enter the area above the memory our commands reside.
+		print("INSTRUCTION ERROR FOUND")
+		open(outfile_name, 'w').close()  # Deletes the content.
+		sys.exit()  # Stops execution.
+	#print(i)
+	#print(str(i)+':', str(instruction_list[i]), "(" + line_list[i] + ")")
 	instruction_list[i].execute()
 
-	print(register)
-	print(ram)
-	print()
+	#print(register)
+	#print(ram)
+	#print()
 
 	if instruction.halt:
 		break
 
 	if instruction.error:
-		print('ERROR FOUND!!!')
-		break
+		print("INSTRUCTION ERROR FOUND")
+		open(outfile_name, 'w').close()  # Deletes the content.
+		sys.exit()  # Stops execution.
 
 
 infile.close()

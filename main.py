@@ -8,7 +8,7 @@ branch_map = {}
 
 
 infile_name = sys.argv[1]
-outfile_name = sys.argv[2]
+outfile_name = infile_name[: len(infile_name) - 3] + "bin"
 
 branch_map = {}
 infile =  open(infile_name, 'r') #To read the file.
@@ -17,7 +17,7 @@ outfile = open(outfile_name, 'w') #To append, if we open with w, it overwrites.
 
 def stop_everything():
 	print("There is a syntax error or impossible addressing mode")
-	open("myoutput1.txt", 'w').close()  # Deletes the content.
+	open(outfile_name, 'w').close()  # Deletes the content.
 	sys.exit()  # Stops execution.
 
 
@@ -59,7 +59,8 @@ def character_to_four_digit_hex(ch):
 def immediate_to_binary(str):
 	if ishexanum(str):
 		return str
-	elif len(str) == 3 and str[0] == '\'' and str[len(str) - 1] == '\'':
+	elif str[0] == '\'' and str[len(str) - 1] == '\'':
+		str_without_quotation = (str[1 : len(str) - 1]).strip()
 		return character_to_four_digit_hex(str[1])
 	elif str in branch_map.keys():
 		return branch_map.get(str)
@@ -103,7 +104,7 @@ def isImmediate(str):
 		return True
 
 	# An ASCII character.
-	if len(str) == 3 and str[0] == '\'' and str[2] == '\'':
+	if  str[0] == '\'' and str[len(str) - 1] == '\'':
 		return True
 
 	# Memory adress of the branch. We take it as immediate.
@@ -195,8 +196,6 @@ def handle_execution(execution_tokens):
 			outfile.write("040000\n")
 		elif token1 == "NOP":
 			outfile.write("380000\n")
-		elif token1 == "":  #Empty string !!!!!!
-			return
 		else:
 			stop_everything()  # Syntax error.
 
@@ -263,25 +262,27 @@ def main():
 
 	for i in range(len(line_list)):
 		line_list[i] = line_list[i].strip()  # Remove white spaces from the beginning and end.
-		line_list[i] = line_list[i].split(" ")  # Now line_list[i] contains both first and second operand.
+		line_list[i] = line_list[i].split()  # Now line_list[i] contains both first and second operand.
 
 	# This one keeps the (branch name : memory adress) pairs. Memory adress is in hex digits.
 	# This iteration is for setting branch_map variable and removing white spaces from beginning and end
 
 	memory_counter = 0
 	for curr_line in line_list:
+		if len(curr_line) == 0: #empty line.
+			continue		
 		if ':' in curr_line[0]:
 			branch_map[curr_line[0].replace(":", "")] = num_to_n_digit_hex(memory_counter, 4)
 			continue  # Don't increase memory_counter, branch is not an instruction!
-		if curr_line[0] == "":
-			continue
+
 
 		memory_counter += 3
 
 	# print(branch_map)
 	for execution_tokens in line_list:
-		# print(execution_tokens)
-		handle_execution(execution_tokens)
+		#print(execution_tokens)
+		if(not (len(line_list) == 0)):
+			handle_execution(execution_tokens)
 
 	infile.close()
 	outfile.close()
