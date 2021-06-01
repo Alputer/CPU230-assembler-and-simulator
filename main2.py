@@ -44,6 +44,14 @@ appropriate_address_modes = {
 	28: [0,1,2,3]
 }
 
+input_queue = []
+def get_input():
+	if len(input_queue) == 0:
+		new_inp = input()
+		input_queue.extend(new_inp.split())
+	k = input_queue.pop(0)
+	return ord(k)
+
 
 def fit_to_2bytes(number):
 	if number < 0:
@@ -252,7 +260,8 @@ class instruction:
 				register[0] = value
 				return
 		elif self.opcode == 27:  # READ
-			pass
+			inp = get_input()
+			self.set_value(inp)
 		elif self.opcode == 28:  # PRINT
 			outfile.write(chr(value) + '\n')
 			print("PRINT:", chr(value))
