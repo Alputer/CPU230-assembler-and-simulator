@@ -7,10 +7,8 @@ conflicting_opcodes = ["0C", "30", "32", "33", "34", "36", "37", "3C", "3E", "3F
 branch_map = {}
 
 
-infile_name = "input1.txt"
-outfile_name = "out.bin"
-if len(sys.argv) >= 2:
-	infile_name = sys.argv[1]
+infile_name = sys.argv[1]
+outfile_name = sys.argv[2]
 
 branch_map = {}
 infile =  open(infile_name, 'r') #To read the file.
@@ -181,7 +179,7 @@ def handle(token2, opcode):
 
 
 def handle_execution(execution_tokens):
-	if len(execution_tokens) == 0:  # empty line???
+	if len(execution_tokens) == 0:  #This cannot catch empty lines, instead it goes into length 1 case.
 		return
 
 	if len(execution_tokens) > 2:  # There cannot be more than 2 tokens.
@@ -197,6 +195,8 @@ def handle_execution(execution_tokens):
 			outfile.write("040000\n")
 		elif token1 == "NOP":
 			outfile.write("380000\n")
+		elif token1 == "":  #Empty string !!!!!!
+			return
 		else:
 			stop_everything()  # Syntax error.
 
@@ -263,7 +263,6 @@ def main():
 
 	for i in range(len(line_list)):
 		line_list[i] = line_list[i].strip()  # Remove white spaces from the beginning and end.
-		line_list[i] = line_list[i].rstrip("\n")  # Remove "\n" from end of the string
 		line_list[i] = line_list[i].split(" ")  # Now line_list[i] contains both first and second operand.
 
 	# This one keeps the (branch name : memory adress) pairs. Memory adress is in hex digits.
@@ -273,7 +272,7 @@ def main():
 	for curr_line in line_list:
 		if ':' in curr_line[0]:
 			branch_map[curr_line[0].replace(":", "")] = num_to_n_digit_hex(memory_counter, 4)
-			continue  # Don't increase memory_counter, branch is not an instruction !!!!!
+			continue  # Don't increase memory_counter, branch is not an instruction!
 
 		memory_counter += 3
 
