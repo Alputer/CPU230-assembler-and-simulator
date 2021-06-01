@@ -273,6 +273,8 @@ def main():
 		if ':' in curr_line[0]:
 			branch_map[curr_line[0].replace(":", "")] = num_to_n_digit_hex(memory_counter, 4)
 			continue  # Don't increase memory_counter, branch is not an instruction!
+		if curr_line[0] == "":
+			continue
 
 		memory_counter += 3
 
