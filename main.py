@@ -269,8 +269,13 @@ def main():
 		line_list[i] = line_list[i].strip()  # Remove white spaces from the beginning and end.
 		line_list[i] = line_list[i].split()  # Now line_list[i] contains both first and second operand.
 
+	for i in range(len(line_list)):
+		for j in range(len(line_list[i])):
+			line_list[i][j] = line_list[i][j].upper() #Project should be case insensitive, so I make every token uppercase.
+
 	# This one keeps the (branch name : memory adress) pairs. Memory adress is in hex digits.
 	# This iteration is for setting branch_map variable and removing white spaces from beginning and end
+
 
 	memory_counter = 0
 	for curr_line in line_list:
