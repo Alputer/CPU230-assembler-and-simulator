@@ -27,6 +27,11 @@ def conflicting_opcode_and_add_mode(hexa_byte):
 	else:
 		return False
 
+def is_valid_branch_name(str):
+	if(str[len(str) - 1] == ':' and str[0].isalpha() and str[0 : len(str) - 1].isalnum() ):
+		return True
+
+	return False
 
 def is_valid_branch_name(str):
 	if len(str) > 1 and str.endswith(':'):
@@ -272,13 +277,20 @@ def main():
 		if len(curr_line) == 0: #empty line.
 			continue		
 		if ':' in curr_line[0]:
+			if not is_valid_branch_name(curr_line[0]):
+				stop_everything()
+			for curr_branch_name in branch_map.keys():
+
+				if curr_branch_name.lower() == curr_line[0][0 : len(curr_line[0]) - 1].lower():  #Same branch name, case insensitive comparison.
+					stop_everything()
+
 			branch_map[curr_line[0].replace(":", "")] = num_to_n_digit_hex(memory_counter, 4)
 			continue  # Don't increase memory_counter, branch is not an instruction!
 
 
 		memory_counter += 3
 
-	# print(branch_map)
+	#print(branch_map.keys())
 	for execution_tokens in line_list:
 		#print(execution_tokens)
 		if(not (len(line_list) == 0)):
