@@ -179,7 +179,7 @@ def handle(token2, opcode):
 
 
 #This function decides the instruction type and send necessary tokens to the handle(str) function.
-.
+
 def handle_execution(execution_tokens):
 	if len(execution_tokens) == 0:  #This cannot catch empty lines, instead it goes into length 1 case.
 		return
