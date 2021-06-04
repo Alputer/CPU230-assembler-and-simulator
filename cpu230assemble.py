@@ -19,12 +19,14 @@ def stop_everything():
 	sys.exit()  # Stops execution.
 
 
+#Returns false if instruction includes conflicting opcode and addressing mode.
 def conflicting_opcode_and_add_mode(hexa_byte):
 	if hexa_byte in conflicting_opcodes:
 		return True
 	else:
 		return False
 
+#Returns false if branch name is invalid. i.e there is a syntax error.
 def is_valid_branch_name(str):
 	if(str[len(str) - 1] == ':' and str[0].isalpha() and str[0 : len(str) - 1].isalnum() ):
 		return True
@@ -151,6 +153,8 @@ def get_addressing_mode(str):
 	stop_everything()
 
 
+#This function finishes the process and writes to the output file.
+#Opcode is already given and inside this funcction, adressing modes and operand values are calculated.
 def handle(token2, opcode):
 	add_mode = get_addressing_mode(token2)  # it is sth like "00", "01", "10", "11".
 	binary_byte = opcode + add_mode  # Something like "00101100"
@@ -174,6 +178,8 @@ def handle(token2, opcode):
 	outfile.write("\n")
 
 
+#This function decides the instruction type and send necessary tokens to the handle(str) function.
+.
 def handle_execution(execution_tokens):
 	if len(execution_tokens) == 0:  #This cannot catch empty lines, instead it goes into length 1 case.
 		return
