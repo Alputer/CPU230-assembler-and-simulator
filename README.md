@@ -7,13 +7,15 @@ For further details about this CPU, check "description.pdf".
 # Running The Code
 
 To produce binary code of an assembly file (say prog.asm), execute this command:
-bash```
+
+```bash
 cpu230assemble prog.asm
 ```
 This command creates "prog.bin" file.
 
 To run the CPU simulation, execute this command:
-bash```
+
+```bash
 cpu230exec prog.bin
 ```
 
